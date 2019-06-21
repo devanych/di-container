@@ -49,9 +49,11 @@ class ContainerTest extends TestCase
                     'string' => 'string',
                 ],
                 'not_scalar' => [
-                    'closure' => function () {return;},
                     'object' => new \StdClass(),
                     'array' => ['array'],
+                    'closure' => function () {
+                        return;
+                    },
                 ],
             ],
         ]);
@@ -151,7 +153,9 @@ class ContainerTest extends TestCase
             $stringId = 'string' => $stringDefinition = 'string',
             $arrayId = 'array' => $arrayDefinition = ['array'],
             $objectId = 'object' => $objectDefinition = new \StdClass(),
-            $closureId = 'closure' => function () {return null;},
+            $closureId = 'closure' => function () {
+                return null;
+            },
         ];
 
         $container->setAll($definitions);
@@ -177,7 +181,9 @@ class ContainerTest extends TestCase
     {
         $container = new Container();
 
-        $container->set($id = 'closure', function () {return null;});
+        $container->set($id = 'closure', function () {
+            return null;
+        });
         self::assertNull($container->get($id));
         self::assertNotNull($container->getDefinition($id));
         self::assertInstanceOf(\Closure::class, $container->getDefinition($id));
@@ -200,8 +206,10 @@ class ContainerTest extends TestCase
     {
         return [
             'notExist' => ['definitionNotExist'],
-            'closure' => [function () {return;}],
             'object' => [new \StdClass()],
+            'closure' => [function () {
+                return;
+            }],
             'false' => [false],
             'true' => [true],
             'null' => [null],
