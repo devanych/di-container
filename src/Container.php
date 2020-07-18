@@ -2,9 +2,18 @@
 
 namespace Devanych\Di;
 
+use Closure;
 use Psr\Container\ContainerInterface;
 use Devanych\Di\Exception\NotFoundException;
 use Devanych\Di\Exception\ContainerException;
+use ReflectionClass;
+use ReflectionException;
+
+use function array_key_exists;
+use function class_exists;
+use function gettype;
+use function is_string;
+use function sprintf;
 
 class Container implements ContainerInterface
 {
@@ -55,10 +64,10 @@ class Container implements ContainerInterface
      */
     public function get($id)
     {
-        if (!\is_string($id)) {
-            throw new NotFoundException(\sprintf(
+        if (!is_string($id)) {
+            throw new NotFoundException(sprintf(
                 'Is not valid ID. MUST be string type, received `%s`',
-                \gettype($id)
+                gettype($id)
             ));
         }
 
@@ -96,7 +105,7 @@ class Container implements ContainerInterface
             return $this->definitions[$id];
         }
 
-        throw new NotFoundException(\sprintf('`%s` is not set in container', $id));
+        throw new NotFoundException(sprintf('`%s` is not set in container', $id));
     }
 
     /**
@@ -107,7 +116,7 @@ class Container implements ContainerInterface
      */
     public function has($id)
     {
-        return \array_key_exists($id, $this->definitions);
+        return array_key_exists($id, $this->definitions);
     }
 
     ##################################################
@@ -127,14 +136,14 @@ class Container implements ContainerInterface
                 return $this->createObject($id);
             }
 
-            throw new NotFoundException(\sprintf('`%s` is not set in container and is not a class name', $id));
+            throw new NotFoundException(sprintf('`%s` is not set in container and is not a class name', $id));
         }
 
         if ($this->isClassName($this->definitions[$id])) {
             return $this->createObject($this->definitions[$id]);
         }
 
-        if ($this->definitions[$id] instanceof \Closure) {
+        if ($this->definitions[$id] instanceof Closure) {
             return $this->definitions[$id]($this);
         }
 
@@ -155,9 +164,9 @@ class Container implements ContainerInterface
         $commonFailMessage = 'Unable to create object `%s`.';
 
         try {
-            $reflection = new \ReflectionClass($className);
-        } catch (\ReflectionException $e) {
-            throw new ContainerException(\sprintf($commonFailMessage, $className));
+            $reflection = new ReflectionClass($className);
+        } catch (ReflectionException $e) {
+            throw new ContainerException(sprintf($commonFailMessage, $className));
         }
 
         $arguments = [];
@@ -171,15 +180,15 @@ class Container implements ContainerInterface
                 } elseif ($parameter->isDefaultValueAvailable()) {
                     try {
                         $arguments[] = $parameter->getDefaultValue();
-                    } catch (\ReflectionException $e) {
-                        throw new ContainerException(\sprintf(
+                    } catch (ReflectionException $e) {
+                        throw new ContainerException(sprintf(
                             $commonFailMessage . ' Unable to get default value of constructor parameter: `%s`',
                             $className,
                             $parameter->getName()
                         ));
                     }
                 } else {
-                    throw new ContainerException(\sprintf(
+                    throw new ContainerException(sprintf(
                         $commonFailMessage . ' Unable to process a constructor parameter: `%s`',
                         $className,
                         $parameter->getName()
@@ -199,7 +208,7 @@ class Container implements ContainerInterface
      */
     private function hasInstance(string $id): bool
     {
-        return \array_key_exists($id, $this->instances);
+        return array_key_exists($id, $this->instances);
     }
 
     /**
@@ -210,6 +219,6 @@ class Container implements ContainerInterface
      */
     private function isClassName($className): bool
     {
-        return (\is_string($className) && \class_exists($className));
+        return (is_string($className) && class_exists($className));
     }
 }
