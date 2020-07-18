@@ -17,7 +17,7 @@ use function gettype;
 use function is_string;
 use function sprintf;
 
-class Container implements ContainerInterface
+final class Container implements ContainerInterface
 {
     /**
      * @var array
