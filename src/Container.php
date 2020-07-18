@@ -60,6 +60,7 @@ final class Container implements ContainerInterface
     public function setAll(array $definitions): void
     {
         foreach ($definitions as $id => $definition) {
+            $this->checkIdIsStringType($id);
             $this->set($id, $definition);
         }
     }
@@ -74,12 +75,7 @@ final class Container implements ContainerInterface
      */
     public function get($id)
     {
-        if (!is_string($id)) {
-            throw new NotFoundException(sprintf(
-                'Is not valid ID. MUST be string type, received `%s`',
-                gettype($id)
-            ));
-        }
+        $this->checkIdIsStringType($id);
 
         if ($this->hasInstance($id)) {
             return $this->instances[$id];
@@ -115,7 +111,7 @@ final class Container implements ContainerInterface
             return $this->definitions[$id];
         }
 
-        throw new NotFoundException(sprintf('`%s` is not set in container', $id));
+        throw new NotFoundException(sprintf('`%s` is not set in container.', $id));
     }
 
     /**
@@ -128,8 +124,6 @@ final class Container implements ContainerInterface
     {
         return array_key_exists($id, $this->definitions);
     }
-
-    ##################################################
 
     /**
      * Create instance by definition from the container by ID.
@@ -146,7 +140,7 @@ final class Container implements ContainerInterface
                 return $this->createObject($id);
             }
 
-            throw new NotFoundException(sprintf('`%s` is not set in container and is not a class name', $id));
+            throw new NotFoundException(sprintf('`%s` is not set in container and is not a class name.', $id));
         }
 
         if ($this->isClassName($this->definitions[$id])) {
@@ -192,14 +186,14 @@ final class Container implements ContainerInterface
                         $arguments[] = $parameter->getDefaultValue();
                     } catch (ReflectionException $e) {
                         throw new ContainerException(sprintf(
-                            $commonFailMessage . ' Unable to get default value of constructor parameter: `%s`',
+                            $commonFailMessage . ' Unable to get default value of constructor parameter: `%s`.',
                             $className,
                             $parameter->getName()
                         ));
                     }
                 } else {
                     throw new ContainerException(sprintf(
-                        $commonFailMessage . ' Unable to process a constructor parameter: `%s`',
+                        $commonFailMessage . ' Unable to process a constructor parameter: `%s`.',
                         $className,
                         $parameter->getName()
                     ));
@@ -230,5 +224,19 @@ final class Container implements ContainerInterface
     private function isClassName($className): bool
     {
         return (is_string($className) && class_exists($className));
+    }
+
+    /**
+     * @param mixed $id
+     * @throws NotFoundException for not string types.
+     */
+    private function checkIdIsStringType($id): void
+    {
+        if (!is_string($id)) {
+            throw new NotFoundException(sprintf(
+                'Is not valid ID. Must be string type; received `%s`.',
+                gettype($id)
+            ));
+        }
     }
 }
