@@ -31,7 +31,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Devanych\\Test\\Di\\": "tests/"
+            "Devanych\\Tests\\Di\\": "tests/"
         }
     },
     "scripts": {

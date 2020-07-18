@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace Devanych\Test\Di;
+namespace Devanych\Tests\Di;
 
 use Devanych\Di\Container;
 use PHPUnit\Framework\TestCase;
-use Devanych\Test\Di\TestAsset\DummyData;
-use Devanych\Test\Di\TestAsset\DummyName;
-use Devanych\Test\Di\TestAsset\AutoWiring;
+use Devanych\Tests\Di\TestAsset\DummyData;
+use Devanych\Tests\Di\TestAsset\DummyName;
+use Devanych\Tests\Di\TestAsset\AutoWiring;
 use Devanych\Di\Exception\NotFoundException;
 use Devanych\Di\Exception\ContainerException;
-use Devanych\Test\Di\TestAsset\AutoWiringScalarNotDefault;
+use Devanych\Tests\Di\TestAsset\AutoWiringScalarNotDefault;
 
 class ContainerTest extends TestCase
 {
