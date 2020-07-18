@@ -30,6 +30,14 @@ class Container implements ContainerInterface
     private array $instances = [];
 
     /**
+     * @param array $definitions
+     */
+    public function __construct(array $definitions = [])
+    {
+        $this->setAll($definitions);
+    }
+
+    /**
      * Sets definition to the container.
      *
      * @param string $id
