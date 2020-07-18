@@ -20,12 +20,12 @@ class Container implements ContainerInterface
     /**
      * @var array
      */
-    private $definitions = [];
+    private array $definitions = [];
 
     /**
      * @var array
      */
-    private $instances = [];
+    private array $instances = [];
 
     /**
      * Sets definition to the container.
