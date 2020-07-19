@@ -204,12 +204,14 @@ final class Container implements ContainerInterface
         $arguments = [];
 
         foreach ($constructor->getParameters() as $parameter) {
-            if ($parameterClass = $parameter->getClass()) {
-                $arguments[] = $this->get($parameterClass->getName());
+            $type = $parameter->getType();
+
+            if ($type && !$type->isBuiltin() && $this->isClassName($type->getName())) {
+                $arguments[] = $this->get($type->getName());
                 continue;
             }
 
-            if ($parameter->isArray()) {
+            if ($type && $type->isBuiltin() && $type->getName() === 'array') {
                 $arguments[] = [];
                 continue;
             }
