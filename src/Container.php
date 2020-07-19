@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Devanych\Di;
 
 use Closure;
-use Psr\Container\ContainerInterface;
 use Devanych\Di\Exception\NotFoundException;
 use Devanych\Di\Exception\ContainerException;
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
 use Throwable;
