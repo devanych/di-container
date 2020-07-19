@@ -1,16 +1,18 @@
-<?php declare(strict_types=1);
+<?php
 
-namespace Devanych\Test\Di\TestAsset;
+declare(strict_types=1);
+
+namespace Devanych\Tests\Di\TestAsset;
 
 class DummyName
 {
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
-     * {@inheritDoc}
+     * @param string $name
      */
     public function __construct(string $name = 'Test Name')
     {

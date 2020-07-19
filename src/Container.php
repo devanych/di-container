@@ -1,22 +1,43 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Devanych\Di;
 
+use Closure;
 use Psr\Container\ContainerInterface;
 use Devanych\Di\Exception\NotFoundException;
 use Devanych\Di\Exception\ContainerException;
+use ReflectionClass;
+use ReflectionException;
+use Throwable;
 
-class Container implements ContainerInterface
+use function array_key_exists;
+use function class_exists;
+use function gettype;
+use function in_array;
+use function is_string;
+use function sprintf;
+
+final class Container implements ContainerInterface
 {
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    private $definitions = [];
+    private array $definitions = [];
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    private $instances = [];
+    private array $instances = [];
+
+    /**
+     * @param array $definitions
+     */
+    public function __construct(array $definitions = [])
+    {
+        $this->setAll($definitions);
+    }
 
     /**
      * Sets definition to the container.
@@ -41,6 +62,7 @@ class Container implements ContainerInterface
     public function setAll(array $definitions): void
     {
         foreach ($definitions as $id => $definition) {
+            $this->checkIdIsStringType($id);
             $this->set($id, $definition);
         }
     }
@@ -55,12 +77,7 @@ class Container implements ContainerInterface
      */
     public function get($id)
     {
-        if (!\is_string($id)) {
-            throw new NotFoundException(\sprintf(
-                'Is not valid ID. MUST be string type, received `%s`',
-                \gettype($id)
-            ));
-        }
+        $this->checkIdIsStringType($id);
 
         if ($this->hasInstance($id)) {
             return $this->instances[$id];
@@ -96,7 +113,7 @@ class Container implements ContainerInterface
             return $this->definitions[$id];
         }
 
-        throw new NotFoundException(\sprintf('`%s` is not set in container', $id));
+        throw new NotFoundException(sprintf('`%s` is not set in container.', $id));
     }
 
     /**
@@ -105,12 +122,10 @@ class Container implements ContainerInterface
      * @param string $id
      * @return bool
      */
-    public function has($id)
+    public function has($id): bool
     {
-        return \array_key_exists($id, $this->definitions);
+        return array_key_exists($id, $this->definitions);
     }
-
-    ##################################################
 
     /**
      * Create instance by definition from the container by ID.
@@ -127,14 +142,14 @@ class Container implements ContainerInterface
                 return $this->createObject($id);
             }
 
-            throw new NotFoundException(\sprintf('`%s` is not set in container and is not a class name', $id));
+            throw new NotFoundException(sprintf('`%s` is not set in container and is not a class name.', $id));
         }
 
         if ($this->isClassName($this->definitions[$id])) {
             return $this->createObject($this->definitions[$id]);
         }
 
-        if ($this->definitions[$id] instanceof \Closure) {
+        if ($this->definitions[$id] instanceof Closure) {
             return $this->definitions[$id]($this);
         }
 
@@ -144,48 +159,79 @@ class Container implements ContainerInterface
     /**
      * Create object by class name.
      *
-     * If the object has dependencies in the constructor, it tries to create them too.
-     *
      * @param string $className
      * @return object
      * @throws ContainerException If unable to create object.
      */
     private function createObject(string $className): object
     {
-        $commonFailMessage = 'Unable to create object `%s`.';
-
         try {
-            $reflection = new \ReflectionClass($className);
-        } catch (\ReflectionException $e) {
-            throw new ContainerException(\sprintf($commonFailMessage, $className));
+            $reflection = new ReflectionClass($className);
+        } catch (ReflectionException $e) {
+            throw new ContainerException(sprintf('Unable to create object `%s`.', $className), 0, $e);
+        }
+
+        if (in_array(FactoryInterface::class, $reflection->getInterfaceNames())) {
+            try {
+                /** @var FactoryInterface $factory */
+                $factory = $this->getObjectFromReflection($reflection);
+                return $factory->create($this);
+            } catch (ContainerException $e) {
+                throw $e;
+            } catch (Throwable $e) {
+                throw new ContainerException(sprintf('Unable to create object `%s`.', $className), 0, $e);
+            }
+        }
+
+        return $this->getObjectFromReflection($reflection);
+    }
+
+    /**
+     * Create object from reflection.
+     *
+     * If the object has dependencies in the constructor, it tries to create them too.
+     *
+     * @param ReflectionClass $reflection
+     * @return object
+     * @throws ContainerException If unable to create object.
+     */
+    private function getObjectFromReflection(ReflectionClass $reflection): object
+    {
+        if (($constructor = $reflection->getConstructor()) === null) {
+            return $reflection->newInstance();
         }
 
         $arguments = [];
 
-        if (($constructor = $reflection->getConstructor()) !== null) {
-            foreach ($constructor->getParameters() as $parameter) {
-                if ($parameterClass = $parameter->getClass()) {
-                    $arguments[] = $this->get($parameterClass->getName());
-                } elseif ($parameter->isArray()) {
-                    $arguments[] = [];
-                } elseif ($parameter->isDefaultValueAvailable()) {
-                    try {
-                        $arguments[] = $parameter->getDefaultValue();
-                    } catch (\ReflectionException $e) {
-                        throw new ContainerException(\sprintf(
-                            $commonFailMessage . ' Unable to get default value of constructor parameter: `%s`',
-                            $className,
-                            $parameter->getName()
-                        ));
-                    }
-                } else {
-                    throw new ContainerException(\sprintf(
-                        $commonFailMessage . ' Unable to process a constructor parameter: `%s`',
-                        $className,
+        foreach ($constructor->getParameters() as $parameter) {
+            if ($parameterClass = $parameter->getClass()) {
+                $arguments[] = $this->get($parameterClass->getName());
+                continue;
+            }
+
+            if ($parameter->isArray()) {
+                $arguments[] = [];
+                continue;
+            }
+
+            if ($parameter->isDefaultValueAvailable()) {
+                try {
+                    $arguments[] = $parameter->getDefaultValue();
+                    continue;
+                } catch (ReflectionException $e) {
+                    throw new ContainerException(sprintf(
+                        'Unable to create object `%s`. Unable to get default value of constructor parameter: `%s`.',
+                        $reflection->getName(),
                         $parameter->getName()
                     ));
                 }
             }
+
+            throw new ContainerException(sprintf(
+                'Unable to create object `%s`. Unable to process a constructor parameter: `%s`.',
+                $reflection->getName(),
+                $parameter->getName()
+            ));
         }
 
         return $reflection->newInstanceArgs($arguments);
@@ -199,7 +245,7 @@ class Container implements ContainerInterface
      */
     private function hasInstance(string $id): bool
     {
-        return \array_key_exists($id, $this->instances);
+        return array_key_exists($id, $this->instances);
     }
 
     /**
@@ -210,6 +256,20 @@ class Container implements ContainerInterface
      */
     private function isClassName($className): bool
     {
-        return (\is_string($className) && \class_exists($className));
+        return (is_string($className) && class_exists($className));
+    }
+
+    /**
+     * @param mixed $id
+     * @throws NotFoundException for not string types.
+     */
+    private function checkIdIsStringType($id): void
+    {
+        if (!is_string($id)) {
+            throw new NotFoundException(sprintf(
+                'Is not valid ID. Must be string type; received `%s`.',
+                gettype($id)
+            ));
+        }
     }
 }

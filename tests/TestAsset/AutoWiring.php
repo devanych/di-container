@@ -1,31 +1,36 @@
-<?php declare(strict_types=1);
+<?php
 
-namespace Devanych\Test\Di\TestAsset;
+declare(strict_types=1);
+
+namespace Devanych\Tests\Di\TestAsset;
 
 class AutoWiring
 {
     /**
      * @var DummyData
      */
-    private $dummyData;
+    private DummyData $dummyData;
 
     /**
      * @var array
      */
-    private $array;
+    private array $array;
 
     /**
      * @var int
      */
-    private $int;
+    private int $int;
 
     /**
      * @var string
      */
-    private $string;
+    private string $string;
 
     /**
-     * {@inheritDoc}
+     * @param DummyData $dummyData
+     * @param array $array
+     * @param int $int
+     * @param string $string
      */
     public function __construct(DummyData $dummyData, array $array, int $int = 100, string $string = 'string')
     {

@@ -1,20 +1,29 @@
 {
     "name": "devanych/di-container",
-    "description": "PSR-11 Dependency injection container implementation",
-    "keywords": ["php", "di", "container", "autowiring", "psr-11", "psr11"],
+    "description": "PSR-11 dependency injection container implementation",
+    "keywords": ["php", "di", "container", "psr-11", "autowiring", "autowire"],
     "type": "library",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Evgeniy Zyubin",
+            "email": "mail@devanych.ru",
+            "homepage": "https://devanych.ru/",
+            "role": "Founder and lead developer"
+        }
+    ],
     "support": {
         "issues": "https://github.com/devanych/di-container/issues?state=open",
         "source": "https://github.com/devanych/di-container"
     },
     "require": {
-        "php": ">=7.2",
+        "php": ">=7.4",
         "psr/container": "^1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8",
-        "squizlabs/php_codesniffer": "^3.4"
+        "phpunit/phpunit": "^9.1",
+        "squizlabs/php_codesniffer": "^3.5",
+        "vimeo/psalm": "^3.12"
     },
     "autoload": {
         "psr-4": {
@@ -23,7 +32,18 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Devanych\\Test\\Di\\": "tests/"
+            "Devanych\\Tests\\Di\\": "tests/"
         }
+    },
+    "scripts": {
+        "test": "phpunit --colors=always",
+        "static": "psalm",
+        "cs-check": "phpcs",
+        "cs-fix": "phpcbf",
+        "check": [
+            "@cs-check",
+            "@static",
+            "@test"
+        ]
     }
 }

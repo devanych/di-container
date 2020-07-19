@@ -1,21 +1,24 @@
-<?php declare(strict_types=1);
+<?php
 
-namespace Devanych\Test\Di\TestAsset;
+declare(strict_types=1);
+
+namespace Devanych\Tests\Di\TestAsset;
 
 class AutoWiringScalarNotDefault
 {
     /**
      * @var int
      */
-    private $int;
+    private int $int;
 
     /**
      * @var string
      */
-    private $string;
+    private string $string;
 
     /**
-     * {@inheritDoc}
+     * @param int $int
+     * @param string $string
      */
     public function __construct(int $int, string $string)
     {

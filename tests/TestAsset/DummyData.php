@@ -1,13 +1,15 @@
-<?php declare(strict_types=1);
+<?php
 
-namespace Devanych\Test\Di\TestAsset;
+declare(strict_types=1);
+
+namespace Devanych\Tests\Di\TestAsset;
 
 class DummyData
 {
     /**
      * @var DummyName
      */
-    private $name;
+    private DummyName $name;
 
     /**
      * @var mixed
@@ -15,7 +17,8 @@ class DummyData
     private $time;
 
     /**
-     * {@inheritDoc}
+     * @param DummyName $name
+     * @param mixed|null $time
      */
     public function __construct(DummyName $name, $time = null)
     {
