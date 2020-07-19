@@ -26,7 +26,7 @@ interface FactoryInterface
      *         $this->environment = $environment;
      *     }
      *
-     *     public function create(ContainerInterface $container): object
+     *     public function create(ContainerInterface $container): Application
      *     {
      *         return new Application(
      *             $container->get(Router::class),
