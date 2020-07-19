@@ -206,7 +206,7 @@ final class Container implements ContainerInterface
         foreach ($constructor->getParameters() as $parameter) {
             $type = $parameter->getType();
 
-            if ($type && !$type->isBuiltin() && $this->isClassName($type->getName())) {
+            if ($type && !$type->isBuiltin()) {
                 $arguments[] = $this->get($type->getName());
                 continue;
             }
