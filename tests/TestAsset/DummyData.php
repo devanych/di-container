@@ -9,7 +9,7 @@ class DummyData
     /**
      * @var DummyName
      */
-    private $name;
+    private DummyName $name;
 
     /**
      * @var mixed
@@ -17,7 +17,8 @@ class DummyData
     private $time;
 
     /**
-     * {@inheritDoc}
+     * @param DummyName $name
+     * @param mixed|null $time
      */
     public function __construct(DummyName $name, $time = null)
     {

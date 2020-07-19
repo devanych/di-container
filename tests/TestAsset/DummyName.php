@@ -9,10 +9,10 @@ class DummyName
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
-     * {@inheritDoc}
+     * @param string $name
      */
     public function __construct(string $name = 'Test Name')
     {
