@@ -1,4 +1,4 @@
-# HTTP Request Change Log
+# Devanych Di Container Change Log
 
 ## 2.0.0 - under development
 
@@ -11,11 +11,13 @@
 ### Changed
 
 - Increases the minimum supported PHP version to 7.4.
-- Adds `__construct(array $definitions = [])` method to the `Devanych\Di\Container`; inside the constructor calls the `setAll()` method.
-- Modifies `Devanych\Di\Container` such that it now automatically resolve `Devanych\Di\FactoryInterface` instance to the `Container::get()` and `Container::getNew()` methods.
-- Modifies `Devanych\Di\Container` to the final class.
 - Updates package dependencies to composer.json.
 - PSR-2 coding standard on PSR-12.
+- Modifies `Devanych\Di\Container`:
+    - Adds `__construct(array $definitions = [])` method; inside the constructor calls the `setAll()` method.
+    - Adds automatic resolving `Devanych\Di\FactoryInterface` instances to the `Container::get()` and `Container::getNew()` methods.
+    - Replaces deprecated reflection methods (`ReflectionParameter::getClass()` and `ReflectionParameter::isArray()`) to usage `ReflectionNamedType` for PHP 8.0.
+    - Makes the class is final.
 
 ### Deprecated
 
