@@ -10,22 +10,24 @@ use Devanych\Di\Exception\NotFoundException;
 use Devanych\Di\Exception\ContainerException;
 use ReflectionClass;
 use ReflectionException;
+use Throwable;
 
 use function array_key_exists;
 use function class_exists;
 use function gettype;
+use function in_array;
 use function is_string;
 use function sprintf;
 
 final class Container implements ContainerInterface
 {
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     private array $definitions = [];
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
     private array $instances = [];
 
@@ -120,7 +122,7 @@ final class Container implements ContainerInterface
      * @param string $id
      * @return bool
      */
-    public function has($id)
+    public function has($id): bool
     {
         return array_key_exists($id, $this->definitions);
     }
@@ -157,48 +159,79 @@ final class Container implements ContainerInterface
     /**
      * Create object by class name.
      *
-     * If the object has dependencies in the constructor, it tries to create them too.
-     *
      * @param string $className
      * @return object
      * @throws ContainerException If unable to create object.
      */
     private function createObject(string $className): object
     {
-        $commonFailMessage = 'Unable to create object `%s`.';
-
         try {
             $reflection = new ReflectionClass($className);
         } catch (ReflectionException $e) {
-            throw new ContainerException(sprintf($commonFailMessage, $className));
+            throw new ContainerException(sprintf('Unable to create object `%s`.', $className), 0, $e);
+        }
+
+        if (in_array(FactoryInterface::class, $reflection->getInterfaceNames())) {
+            try {
+                /** @var FactoryInterface $factory */
+                $factory = $this->getObjectFromReflection($reflection);
+                return $factory->create($this);
+            } catch (ContainerException $e) {
+                throw $e;
+            } catch (Throwable $e) {
+                throw new ContainerException(sprintf('Unable to create object `%s`.', $className), 0, $e);
+            }
+        }
+
+        return $this->getObjectFromReflection($reflection);
+    }
+
+    /**
+     * Create object from reflection.
+     *
+     * If the object has dependencies in the constructor, it tries to create them too.
+     *
+     * @param ReflectionClass $reflection
+     * @return object
+     * @throws ContainerException If unable to create object.
+     */
+    private function getObjectFromReflection(ReflectionClass $reflection): object
+    {
+        if (($constructor = $reflection->getConstructor()) === null) {
+            return $reflection->newInstance();
         }
 
         $arguments = [];
 
-        if (($constructor = $reflection->getConstructor()) !== null) {
-            foreach ($constructor->getParameters() as $parameter) {
-                if ($parameterClass = $parameter->getClass()) {
-                    $arguments[] = $this->get($parameterClass->getName());
-                } elseif ($parameter->isArray()) {
-                    $arguments[] = [];
-                } elseif ($parameter->isDefaultValueAvailable()) {
-                    try {
-                        $arguments[] = $parameter->getDefaultValue();
-                    } catch (ReflectionException $e) {
-                        throw new ContainerException(sprintf(
-                            $commonFailMessage . ' Unable to get default value of constructor parameter: `%s`.',
-                            $className,
-                            $parameter->getName()
-                        ));
-                    }
-                } else {
+        foreach ($constructor->getParameters() as $parameter) {
+            if ($parameterClass = $parameter->getClass()) {
+                $arguments[] = $this->get($parameterClass->getName());
+                continue;
+            }
+
+            if ($parameter->isArray()) {
+                $arguments[] = [];
+                continue;
+            }
+
+            if ($parameter->isDefaultValueAvailable()) {
+                try {
+                    $arguments[] = $parameter->getDefaultValue();
+                    continue;
+                } catch (ReflectionException $e) {
                     throw new ContainerException(sprintf(
-                        $commonFailMessage . ' Unable to process a constructor parameter: `%s`.',
-                        $className,
+                        'Unable to create object `%s`. Unable to get default value of constructor parameter: `%s`.',
+                        $reflection->getName(),
                         $parameter->getName()
                     ));
                 }
             }
+
+            throw new ContainerException(sprintf(
+                'Unable to create object `%s`. Unable to process a constructor parameter: `%s`.',
+                $reflection->getName(),
+                $parameter->getName()
+            ));
         }
 
         return $reflection->newInstanceArgs($arguments);
