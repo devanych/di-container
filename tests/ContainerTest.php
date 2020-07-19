@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Devanych\Tests\Di;
 
+use Closure;
 use Devanych\Di\Container;
 use PHPUnit\Framework\TestCase;
 use Devanych\Tests\Di\TestAsset\DummyData;
@@ -12,6 +13,9 @@ use Devanych\Tests\Di\TestAsset\AutoWiring;
 use Devanych\Di\Exception\NotFoundException;
 use Devanych\Di\Exception\ContainerException;
 use Devanych\Tests\Di\TestAsset\AutoWiringScalarNotDefault;
+use StdClass;
+
+use function microtime;
 
 class ContainerTest extends TestCase
 {
@@ -51,7 +55,7 @@ class ContainerTest extends TestCase
                     'string' => 'string',
                 ],
                 'not_scalar' => [
-                    'object' => new \StdClass(),
+                    'object' => new StdClass(),
                     'array' => ['array'],
                     'closure' => function () {
                         return;
@@ -98,7 +102,7 @@ class ContainerTest extends TestCase
         });
 
         $container->set('time', function () {
-            return \microtime(true);
+            return microtime(true);
         });
 
         $container->set(DummyData::class, function ($container) {
@@ -118,7 +122,7 @@ class ContainerTest extends TestCase
         $container = new Container();
 
         $container->set(DummyData::class, function () {
-            return new DummyData((new DummyName('John')), \microtime(true));
+            return new DummyData((new DummyName('John')), microtime(true));
         });
 
         self::assertNotNull($instance1 = $container->get(DummyData::class));
@@ -134,7 +138,7 @@ class ContainerTest extends TestCase
         $container = new Container();
 
         $container->set(DummyData::class, function () {
-            return new DummyData(new DummyName('John'), \microtime(true));
+            return new DummyData(new DummyName('John'), microtime(true));
         });
 
         self::assertNotNull($instance1 = $container->getNew(DummyData::class));
@@ -154,7 +158,7 @@ class ContainerTest extends TestCase
             $booleanId = 'boolean' => $booleanDefinition = false,
             $stringId = 'string' => $stringDefinition = 'string',
             $arrayId = 'array' => $arrayDefinition = ['array'],
-            $objectId = 'object' => $objectDefinition = new \StdClass(),
+            $objectId = 'object' => $objectDefinition = new StdClass(),
             $closureId = 'closure' => function () {
                 return null;
             },
@@ -188,10 +192,10 @@ class ContainerTest extends TestCase
         });
         self::assertNull($container->get($id));
         self::assertNotNull($container->getDefinition($id));
-        self::assertInstanceOf(\Closure::class, $container->getDefinition($id));
+        self::assertInstanceOf(Closure::class, $container->getDefinition($id));
 
-        $container->set(\StdClass::class, \StdClass::class);
-        self::assertEquals(\StdClass::class, $container->getDefinition(\StdClass::class));
+        $container->set(StdClass::class, StdClass::class);
+        self::assertEquals(StdClass::class, $container->getDefinition(StdClass::class));
     }
 
     public function testGetDefinitionThrowNotFoundForInvalidId(): void
@@ -208,7 +212,7 @@ class ContainerTest extends TestCase
     {
         return [
             'notExist' => ['definitionNotExist'],
-            'object' => [new \StdClass()],
+            'object' => [new StdClass()],
             'closure' => [function () {
                 return;
             }],
@@ -235,7 +239,7 @@ class ContainerTest extends TestCase
     public function testAutoInstantiatingWithoutUseSet(): void
     {
         $container = new Container();
-        self::assertInstanceOf(\StdClass::class, $container->get(\StdClass::class));
+        self::assertInstanceOf(StdClass::class, $container->get(StdClass::class));
         self::assertInstanceOf(DummyName::class, $container->get(DummyName::class));
         self::assertInstanceOf(DummyData::class, $container->get(DummyData::class));
     }
