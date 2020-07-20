@@ -36,7 +36,7 @@ final class Container implements ContainerInterface
      */
     public function __construct(array $definitions = [])
     {
-        $this->setAll($definitions);
+        $this->setMultiple($definitions);
     }
 
     /**
@@ -59,7 +59,7 @@ final class Container implements ContainerInterface
      *
      * @param array $definitions
      */
-    public function setAll(array $definitions): void
+    public function setMultiple(array $definitions): void
     {
         foreach ($definitions as $id => $definition) {
             $this->checkIdIsStringType($id);

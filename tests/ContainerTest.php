@@ -196,7 +196,7 @@ class ContainerTest extends TestCase
         $this->assertNull($container->get($closureId));
     }
 
-    public function testSetAll(): void
+    public function testSetMultiple(): void
     {
         $container = new Container();
         $definitions = [
@@ -209,7 +209,7 @@ class ContainerTest extends TestCase
             $closureId = 'closure' => fn() => null,
         ];
 
-        $container->setAll($definitions);
+        $container->setMultiple($definitions);
         $this->assertSame($integerDefinition, $container->get($integerId));
         $this->assertSame($floatDefinition, $container->get($floatId));
         $this->assertSame($booleanDefinition, $container->get($booleanId));
