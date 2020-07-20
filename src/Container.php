@@ -117,7 +117,7 @@ final class Container implements ContainerInterface
     }
 
     /**
-     * Returns `true` if the container can return an definition for this ID, otherwise `false`.
+     * Returns 'true` if the dependency with this ID was sets, otherwise `false`.
      *
      * @param string $id
      * @return bool
