@@ -12,7 +12,7 @@ class AutoWiringDummyFactory implements FactoryInterface
     /**
      * {@inheritDoc
      */
-    public function create(ContainerInterface $container): object
+    public function create(ContainerInterface $container): DummyData
     {
         return $container->get(DummyFactory::class);
     }

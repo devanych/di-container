@@ -27,7 +27,7 @@ class DummyFactory implements FactoryInterface
     /**
      * {@inheritDoc
      */
-    public function create(ContainerInterface $container): object
+    public function create(ContainerInterface $container): DummyData
     {
         return new DummyData($container->get(DummyName::class), $this->time);
     }
