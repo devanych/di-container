@@ -1,12 +1,12 @@
 # Devanych Di Container Change Log
 
-## 2.0.0 - under development
+## 2.0.0 - 2020-07-21
 
 ### Added
 
 - `Devanych\Di\FactoryInterface`.
 - `vimeo/psalm` package for static analysis code.
-- Add a `build` action that is triggered when `push` and `pull_request` events.
+- `build` action that is triggered when `push` and `pull_request` events.
 
 ### Changed
 
@@ -14,9 +14,10 @@
 - Updates package dependencies to composer.json.
 - PSR-2 coding standard on PSR-12.
 - Modifies `Devanych\Di\Container`:
-    - Adds `__construct(array $definitions = [])` method; inside the constructor calls the `setAll()` method.
+    - Adds `__construct(array $definitions = [])` method; inside the constructor calls the `setMultiple()` method.
     - Adds automatic resolving `Devanych\Di\FactoryInterface` instances to the `Container::get()` and `Container::getNew()` methods.
     - Replaces deprecated reflection methods (`ReflectionParameter::getClass()` and `ReflectionParameter::isArray()`) to usage `ReflectionNamedType` for PHP 8.0.
+    - Renames `setAll()` to `setMultiple()` method.
     - Makes the class is final.
 
 ### Deprecated

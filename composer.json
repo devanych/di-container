@@ -1,6 +1,6 @@
 {
     "name": "devanych/di-container",
-    "description": "PSR-11 dependency injection container implementation",
+    "description": "Simple implementation of a PSR-11 dependency injection container",
     "keywords": ["php", "di", "container", "psr-11", "autowiring", "autowire"],
     "type": "library",
     "license": "MIT",
@@ -17,7 +17,7 @@
         "source": "https://github.com/devanych/di-container"
     },
     "require": {
-        "php": ">=7.4",
+        "php": "^7.4",
         "psr/container": "^1.0"
     },
     "require-dev": {

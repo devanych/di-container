@@ -1,24 +1,29 @@
 # Dependency Injection Container
 
-PHP package. Implementation of a dependency injection [PSR-11 Container](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-11-container.md).
+[![License](https://poser.pugx.org/devanych/di-container/license)](https://packagist.org/packages/devanych/di-container)
+[![Latest Stable Version](https://poser.pugx.org/devanych/di-container/v)](https://packagist.org/packages/devanych/di-container)
+[![Total Downloads](https://poser.pugx.org/devanych/di-container/downloads)](https://packagist.org/packages/devanych/di-container)
+[![GitHub Build Status](https://github.com/devanych/di-container/workflows/build/badge.svg)](https://github.com/devanych/di-container/actions)
+[![Scrutinizer Code Coverage](https://scrutinizer-ci.com/g/devanych/di-container/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/devanych/di-container/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/devanych/di-container/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/devanych/di-container/?branch=master)
 
-Simple and lightweight container using autowiring.
-
-This package requires PHP version 7.2 or later.
+A simple and lightweight container for dependency injection using autowiring that implements [PSR-11 Container](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-11-container.md).
 
 Support:
 
-* objects or class names
+* Objects or class names.
 
-* anonymous functions (Closure instance)
+* Anonymous functions (Closure instance).
 
-* scalars (integer, float, string, boolean)
+* Scalars (integer, float, string, boolean).
 
-* arrays and nested arrays with all of the above data types
+* Arrays and nested arrays with all of the above data types.
+
+A guide with a detailed description in Russian language is [available here](https://devanych.ru/development/prostoj-di-kontejner-s-podderzhkoj-avtovajringa).
 
 ## Installation
 
-This library is installed using the composer:
+This package requires PHP version 7.4 or later.
 
 ```
 composer require devanych/di-container
@@ -32,9 +37,11 @@ Create a container:
 use Devanych\Di\Container;
 
 $container = new Container();
+// or with definitions array
+$container = new Container($definitions);
 ```
 
-Sets in container:
+Sets in the container:
 
 ```php
 /**
@@ -46,18 +53,18 @@ Sets in container:
 $container->set($id, $definition);
 
 /**
- * Sets multiple definitions at once.
+ * Sets multiple definitions at once; used in the constructor.
  *
- * @param array $definitions
+ * @param array<string, mixed> $definitions
  */
-$container->setAll($definitions);
+$container->setMultiple($definitions);
 ```
 
-Has in container:
+Existence in the container:
 
 ```php
 /**
- * Returns `true` if the container can return an definition for this ID, otherwise `false`.
+ * Returns 'true` if the dependency with this ID was sets, otherwise `false`.
  *
  * @param string $id
  * @return bool
@@ -65,7 +72,7 @@ Has in container:
 $container->has($id);
 ```
 
-Gets from container:
+Gets from the container:
 
 ```php
 /**
@@ -97,35 +104,32 @@ $container->getNew($id);
  */
 $container->getDefinition($id);
 ```
-If the definition is an anonymous function or class name, the `get()` method will run the function and create an instance of the class only the first time, and subsequent `get()` calls will return the result already created.
+If the definition is an anonymous function or class name, the `get()` method will execute the function and create an instance of the class only the first time, and subsequent `get()` calls will return the result already created.
 
-> If you need to run the function and create an instance of the class every time, use the `getNew()` method.
+> If you need to execute a function and create an instance of the class every time, use the `getNew ()` method.
 
 If the definition is a class name and there are dependencies in its constructor, then when calling the `get()` and `getNew ()` methods, at the time of creating the class instance, the container will recursively bypass all dependencies and try to resolve them.
 
-> If the passed parameter `$id` to the methods `get()` and `getNew()` is a class name and has not been set previously by the `set()` method, the object will still be created as if it had been set. 
+> If the passed parameter `$id` to the methods `get()` and `getNew()` is a class name and has not been set previously by the `set()` method, an object of these class will still be created as if it had been set.
 >
 > If `$id` is not a class name and has not been set previously by the `set()` method, the exception `Devanych\Di\Exception\NotFoundException` will be thrown.
 
 ## Examples of use
 
-Simplest use:
+Simple usage:
 
 ```php
 // Set string
 $container->set('string', 'value');
-// Result: 'value'
-$container->get('string');
+$container->get('string'); // 'value'
 
 // Set integer
 $container->set('integer', 5);
-// Result: 5
-$container->get('integer');
+$container->get('integer'); // 5
 
 // Set array
 $container->set('array', [1,2,3]);
-// Result: [1,2,3]
-$container->get('array');
+$container->get('array'); // [1,2,3]
 
 // Set nested array
 $container->set('nested', [
@@ -136,17 +140,15 @@ $container->set('nested', [
         'string' => 'string',
     ],
     'not_scalar' => [
-        'closure' => function () {return;},
+        'closure' => fn() => null,
         'object' => new User(),
         'array' => ['array'],
     ],
 ]);
 
 // Set object
-$container->set('user', function () {
-    return new User();
-});
-$container->get('user');
+$container->set('user', fn() => new User());
+$container->get('user'); // User instance
 // Or
 $container->set('user', User::class);
 $container->get('user');
@@ -157,21 +159,11 @@ $container->get(User::class);
 $container->get(User::class);
 ```
 
-Use with dependencies:
+Usage of dependencies:
 
 ```php
 /*
-class User
-{
-    private $profile;
-
-    public function __construct(UserProfile $profile)
-    {
-        $this->profile = $profile;
-    }
-}
-
-class UserProfile
+final class UserProfile
 {
     private $name;
     private $age;
@@ -182,12 +174,22 @@ class UserProfile
         $this->age = $age;
     }
 }
+
+final class User
+{
+    private $profile;
+
+    public function __construct(UserProfile $profile)
+    {
+        $this->profile = $profile;
+    }
+}
 */
 
 $container->set('user_name', 'Alexander');
 $container->set('user_age', 40);
 
-$container->set('user', function (\Psr\Container\ContainerInterface $container) {
+$container->set('user', function (\Psr\Container\ContainerInterface $container): User {
     $name = $container->get('user_name');
     $age = $container->get('user_age');
     $profile = new UserProfile($name, $age);
@@ -198,11 +200,11 @@ $container->get('user');
 
 // Or
 
-$container->set(UserProfile::class, function (\Psr\Container\ContainerInterface $container) {
+$container->set(UserProfile::class, function (\Psr\Container\ContainerInterface $container): UserProfile {
     return new UserProfile($container->get('user_name'), $container->get('user_age'));
 });
 
-$container->set(User::class, function ($container) {
+$container->set(User::class, function (\Psr\Container\ContainerInterface $container): User {
     return new User($container->get(UserProfile::class));
 });
 
@@ -212,4 +214,49 @@ $container->get(User::class);
 
 $container->set(User::class, User::class);
 $container->get(User::class);
+```
+
+Usage with dependencies and factories:
+
+```php
+/*
+final class UserProfileFactory implements \Devanych\Di\FactoryInterface
+{
+    public function create(\Psr\Container\ContainerInterface $container): UserProfile
+    {
+        return new UserProfile($container->get('user_name'), $container->get('user_age'));
+    }
+}
+
+final class UserFactory implements \Devanych\Di\FactoryInterface
+{
+    public ?string $name;
+    public ?int $age;
+    
+    public function __construct(string $name = null, int $age = null)
+    {
+        $this->name = $name;
+        $this->age = $age;
+    }
+
+    public function create(\Psr\Container\ContainerInterface $container): User
+    {
+        if ($this->name === null || $this->age === null) {
+            return new User($container->get(UserProfile::class));
+        }
+
+        return new User(new UserProfile($this->name, $this->age));
+    }   
+}
+*/
+
+$container->setMultiple([
+    'user_name' => 'Alexander',
+    'user_age' => 40,
+    User::class => UserFactory::class,
+    UserProfile::class => UserProfileFactory::class,
+]);
+
+$container->get(User::class); // User instance
+$container->get(UserProfile::class); // UserProfile instance
 ```
