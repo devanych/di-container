@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Devanych\Tests\Di\TestAsset;
 
-class AutoWiring
+class AutoWiring implements AutoWiringInterface
 {
     /**
      * @var DummyData

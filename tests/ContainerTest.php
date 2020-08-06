@@ -7,6 +7,8 @@ namespace Devanych\Tests\Di;
 use Closure;
 use Devanych\Di\Container;
 use Devanych\Tests\Di\TestAsset\AutoWiringDummyFactory;
+use Devanych\Tests\Di\TestAsset\AutoWiringFactory;
+use Devanych\Tests\Di\TestAsset\AutoWiringInterface;
 use Devanych\Tests\Di\TestAsset\DummyFactory;
 use Devanych\Tests\Di\TestAsset\DummyData;
 use Devanych\Tests\Di\TestAsset\DummyName;
@@ -308,6 +310,33 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(DummyData::class, $dummyData);
         $this->assertInstanceOf(DummyName::class, $dummyData->getName());
         $this->assertSame('Test Name', $dummyData->getName()->get());
+    }
+
+    public function testAutoWiringFactoryForAutoWiringInterfaceIsNull(): void
+    {
+        $container = new Container();
+        $autoWiring = $container->get(AutoWiringFactory::class);
+
+        $this->assertInstanceOf(DummyData::class, $autoWiring->getDummyData());
+        $this->assertInstanceOf(DummyName::class, $autoWiring->getDummyData()->getName());
+        $this->assertSame('Test Name', $autoWiring->getDummyData()->getName()->get());
+    }
+
+    public function testAutoWiringFactoryForPassedAutoWiringInterface(): void
+    {
+        $container = new Container();
+        $autoWiring = $container->get(AutoWiring::class);
+        $autoWiringFactory = new AutoWiringFactory($autoWiring);
+
+        $this->assertSame($autoWiring, $autoWiringFactory->create($container));
+        $this->assertSame($autoWiring, $autoWiringFactory->create(new Container()));
+    }
+
+    public function testAutoWiringInterfaceHasNotBeenSet(): void
+    {
+        $container = new Container();
+        $this->expectException(NotFoundException::class);
+        $container->get(AutoWiringInterface::class);
     }
 
     public function testAutoWiringScalarNotDefault(): void

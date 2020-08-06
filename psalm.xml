@@ -18,6 +18,5 @@
         <MixedArgument errorLevel="info" />
         <MixedArgumentTypeCoercion errorLevel="info" />
         <MixedAssignment errorLevel="info" />
-        <MixedInferredReturnType errorLevel="info" />
     </issueHandlers>
 </psalm>
