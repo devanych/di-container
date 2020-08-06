@@ -1,5 +1,27 @@
 # Devanych Di Container Change Log
 
+## 2.0.1 - 2020-08-06
+
+### Added
+
+- Nothing
+
+### Changed
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Fixes autowiring for the interface with default value as definition in the constructor.
+
 ## 2.0.0 - 2020-07-21
 
 ### Added
