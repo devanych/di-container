@@ -1,5 +1,27 @@
 # Devanych Di Container Change Log
 
+## 2.1.0 - 2020-08-20
+
+### Added
+
+- Adds support for PHP 8.0.
+
+### Changed
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
 ## 2.0.1 - 2020-08-06
 
 ### Added
