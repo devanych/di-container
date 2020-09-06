@@ -4,6 +4,7 @@
 [![Latest Stable Version](https://poser.pugx.org/devanych/di-container/v)](https://packagist.org/packages/devanych/di-container)
 [![Total Downloads](https://poser.pugx.org/devanych/di-container/downloads)](https://packagist.org/packages/devanych/di-container)
 [![GitHub Build Status](https://github.com/devanych/di-container/workflows/build/badge.svg)](https://github.com/devanych/di-container/actions)
+[![GitHub Static Analysis Status](https://github.com/devanych/di-container/workflows/static/badge.svg)](https://github.com/devanych/di-container/actions)
 [![Scrutinizer Code Coverage](https://scrutinizer-ci.com/g/devanych/di-container/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/devanych/di-container/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/devanych/di-container/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/devanych/di-container/?branch=master)
 
