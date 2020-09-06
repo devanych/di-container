@@ -32,7 +32,7 @@ final class Container implements ContainerInterface
     private array $instances = [];
 
     /**
-     * @param array $definitions
+     * @param array<string, mixed> $definitions
      */
     public function __construct(array $definitions = [])
     {
@@ -57,7 +57,8 @@ final class Container implements ContainerInterface
     /**
      * Sets multiple definitions at once.
      *
-     * @param array $definitions
+     * @param array<string, mixed> $definitions
+     * @psalm-suppress MixedAssignment
      */
     public function setMultiple(array $definitions): void
     {
@@ -134,6 +135,7 @@ final class Container implements ContainerInterface
      * @return mixed
      * @throws NotFoundException If not found definition in the container.
      * @throws ContainerException If unable to create instance.
+     * @psalm-suppress MixedArgument
      */
     private function createInstance(string $id)
     {
@@ -162,6 +164,7 @@ final class Container implements ContainerInterface
      * @param string $className
      * @return object
      * @throws ContainerException If unable to create object.
+     * @psalm-suppress ArgumentTypeCoercion
      */
     private function createObject(string $className): object
     {
@@ -194,6 +197,7 @@ final class Container implements ContainerInterface
      * @param ReflectionClass $reflection
      * @return object
      * @throws ContainerException If unable to create object.
+     * @psalm-suppress MixedAssignment
      */
     private function getObjectFromReflection(ReflectionClass $reflection): object
     {
