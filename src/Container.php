@@ -216,7 +216,7 @@ final class Container implements ContainerInterface
                     continue;
                 }
 
-                if ($type->isBuiltin() && $typeName === 'array') {
+                if ($type->isBuiltin() && $typeName === 'array' && !$parameter->isDefaultValueAvailable()) {
                     $arguments[] = [];
                     continue;
                 }
