@@ -1,5 +1,27 @@
 # Devanych Di Container Change Log
 
+## 2.1.2 - 2020-09-17
+
+### Added
+
+- Nothing
+
+### Changed
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Fixes autowiring for the array with default value.
+
 ## 2.1.1 - 2020.09.06
 
 ### Added
