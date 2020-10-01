@@ -205,15 +205,10 @@ $container->set(UserProfile::class, function (\Psr\Container\ContainerInterface 
     return new UserProfile($container->get('user_name'), $container->get('user_age'));
 });
 
-$container->set(User::class, function (\Psr\Container\ContainerInterface $container): User {
-    return new User($container->get(UserProfile::class));
-});
-
 $container->get(User::class);
 
 // Or with default values (`John` and `25`)
 
-$container->set(User::class, User::class);
 $container->get(User::class);
 ```
 
@@ -228,34 +223,12 @@ final class UserProfileFactory implements \Devanych\Di\FactoryInterface
         return new UserProfile($container->get('user_name'), $container->get('user_age'));
     }
 }
-
-final class UserFactory implements \Devanych\Di\FactoryInterface
-{
-    public ?string $name;
-    public ?int $age;
-    
-    public function __construct(string $name = null, int $age = null)
-    {
-        $this->name = $name;
-        $this->age = $age;
-    }
-
-    public function create(\Psr\Container\ContainerInterface $container): User
-    {
-        if ($this->name === null || $this->age === null) {
-            return new User($container->get(UserProfile::class));
-        }
-
-        return new User(new UserProfile($this->name, $this->age));
-    }   
-}
 */
 
 $container->setMultiple([
+    UserProfile::class => UserProfileFactory::class,
     'user_name' => 'Alexander',
     'user_age' => 40,
-    User::class => UserFactory::class,
-    UserProfile::class => UserProfileFactory::class,
 ]);
 
 $container->get(User::class); // User instance
