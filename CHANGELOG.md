@@ -1,5 +1,28 @@
 # Devanych Di Container Change Log
 
+## 2.1.3 - 2020-10-01
+
+### Added
+
+- Nothing
+
+### Changed
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Adds the use of strict comparison for the `in_array` function.
+- Fixes the description in `README.md`.
+
 ## 2.1.2 - 2020-09-17
 
 ### Added
