@@ -174,7 +174,7 @@ final class Container implements ContainerInterface
             throw new ContainerException(sprintf('Unable to create object `%s`.', $className), 0, $e);
         }
 
-        if (in_array(FactoryInterface::class, $reflection->getInterfaceNames())) {
+        if (in_array(FactoryInterface::class, $reflection->getInterfaceNames(), true)) {
             try {
                 /** @var FactoryInterface $factory */
                 $factory = $this->getObjectFromReflection($reflection);
