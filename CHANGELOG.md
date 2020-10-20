@@ -1,5 +1,27 @@
 # Devanych Di Container Change Log
 
+## 2.1.4 - 2020-10-20
+
+### Added
+
+- Nothing.
+
+### Changed
+
+- Nothing.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Fixes for using a `Devanych\Di\FactoryInterface` instance that is wrapped with an anonymous function.
+
 ## 2.1.3 - 2020-10-01
 
 ### Added
