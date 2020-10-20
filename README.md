@@ -227,6 +227,9 @@ final class UserProfileFactory implements \Devanych\Di\FactoryInterface
 
 $container->setMultiple([
     UserProfile::class => UserProfileFactory::class,
+    // Or without autowiring
+    // UserProfile::class => fn => UserProfileFactory(),
+    // UserProfile::class => new UserProfileFactory(),
     'user_name' => 'Alexander',
     'user_age' => 40,
 ]);

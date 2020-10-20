@@ -135,10 +135,23 @@ class ContainerTest extends TestCase
         $this->assertSame($instance1, $instance2);
     }
 
-    public function testGetSameObjectFromFactory(): void
+    public function factoryDataProvider(): array
+    {
+        return [
+            'factory-class-name' => [DummyFactory::class],
+            'factory-callable' => [fn() => new DummyFactory()],
+            'factory-object' => [new DummyFactory()],
+        ];
+    }
+
+    /**
+     * @dataProvider factoryDataProvider
+     * @param $factory
+     */
+    public function testGetSameObjectFromFactory($factory): void
     {
         $container = new Container();
-        $container->set(DummyData::class, DummyFactory::class);
+        $container->set(DummyData::class, $factory);
 
         $this->assertNotNull($instance1 = $container->get(DummyData::class));
         $this->assertNotNull($instance2 = $container->get(DummyData::class));

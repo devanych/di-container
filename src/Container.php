@@ -10,12 +10,10 @@ use Devanych\Di\Exception\ContainerException;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
-use Throwable;
 
 use function array_key_exists;
 use function class_exists;
 use function gettype;
-use function in_array;
 use function is_string;
 use function sprintf;
 
@@ -84,7 +82,7 @@ final class Container implements ContainerInterface
             return $this->instances[$id];
         }
 
-        $this->instances[$id] = $this->createInstance($id);
+        $this->instances[$id] = $this->getNew($id);
         return $this->instances[$id];
     }
 
@@ -95,10 +93,17 @@ final class Container implements ContainerInterface
      * @return mixed
      * @throws NotFoundException If not found definition in the container.
      * @throws ContainerException If unable to create instance.
+     * @psalm-suppress MixedAssignment
      */
     public function getNew(string $id)
     {
-        return $this->createInstance($id);
+        $instance = $this->createInstance($id);
+
+        if ($instance instanceof FactoryInterface) {
+            return $instance->create($this);
+        }
+
+        return $instance;
     }
 
     /**
@@ -161,10 +166,13 @@ final class Container implements ContainerInterface
     /**
      * Create object by class name.
      *
+     * If the object has dependencies in the constructor, it tries to create them too.
+     *
      * @param string $className
      * @return object
      * @throws ContainerException If unable to create object.
      * @psalm-suppress ArgumentTypeCoercion
+     * @psalm-suppress MixedAssignment
      */
     private function createObject(string $className): object
     {
@@ -174,33 +182,6 @@ final class Container implements ContainerInterface
             throw new ContainerException(sprintf('Unable to create object `%s`.', $className), 0, $e);
         }
 
-        if (in_array(FactoryInterface::class, $reflection->getInterfaceNames(), true)) {
-            try {
-                /** @var FactoryInterface $factory */
-                $factory = $this->getObjectFromReflection($reflection);
-                return $factory->create($this);
-            } catch (ContainerException $e) {
-                throw $e;
-            } catch (Throwable $e) {
-                throw new ContainerException(sprintf('Unable to create object `%s`.', $className), 0, $e);
-            }
-        }
-
-        return $this->getObjectFromReflection($reflection);
-    }
-
-    /**
-     * Create object from reflection.
-     *
-     * If the object has dependencies in the constructor, it tries to create them too.
-     *
-     * @param ReflectionClass $reflection
-     * @return object
-     * @throws ContainerException If unable to create object.
-     * @psalm-suppress MixedAssignment
-     */
-    private function getObjectFromReflection(ReflectionClass $reflection): object
-    {
         if (($constructor = $reflection->getConstructor()) === null) {
             return $reflection->newInstance();
         }

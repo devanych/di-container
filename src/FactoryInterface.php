@@ -16,32 +16,29 @@ interface FactoryInterface
      * Example of use:
      *
      * ```php
+     * use Devanych\Di\Container;
+     * use Devanych\Di\FactoryInterface;
+     * use Psr\Container\ContainerInterface;
+     *
      * // Example of an ApplicationFactory test class:
-     * final class ApplicationFactory implements \Devanych\Di\FactoryInterface
+     * final class ApplicationFactory implements FactoryInterface
      * {
-     *     public ?string $environment;
-     *
-     *     public function __construct(string $environment = null)
-     *     {
-     *         $this->environment = $environment;
-     *     }
-     *
      *     public function create(ContainerInterface $container): Application
      *     {
      *         return new Application(
      *             $container->get(Router::class),
      *             $container->get(EmitterInterface::class),
-     *             $this->environment ?? $container->get('environment'),
+     *             $container->get('environment'),
      *         );
      *     }
      * }
      *
      * // Example of setting dependencies:
-     * $container = new \Devanych\Di\Container([
+     * $container = new Container([
      *     'environment' => 'development',
      *     Application::class => ApplicationFactory::class,
-     *     Router::class => RouterFactory::class,
-     *     EmitterInterface::class => EmitterFactory::class,
+     *     Router::class => fn() => new RouterFactory(),
+     *     EmitterInterface::class => new EmitterFactory(),
      * ]);
      *
      * // Creating an Application instance:
