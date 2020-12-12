@@ -1,5 +1,28 @@
 # Devanych Di Container Change Log
 
+## 2.1.5 - 2020.12.12
+
+### Added
+
+- Nothing.
+
+### Changed
+
+- Updates development dependencies.
+- Updates GitHub actions.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+- Nothing.
+
 ## 2.1.4 - 2020-10-20
 
 ### Added
