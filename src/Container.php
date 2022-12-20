@@ -173,6 +173,7 @@ final class Container implements ContainerInterface
      * @throws ContainerException If unable to create object.
      * @psalm-suppress ArgumentTypeCoercion
      * @psalm-suppress MixedAssignment
+     * @psalm-suppress UndefinedMethod
      */
     private function createObject(string $className): object
     {
