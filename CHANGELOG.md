@@ -1,5 +1,28 @@
 # Devanych Di Container Change Log
 
+## 2.1.6 - 2022.12.20
+
+### Added
+
+- Nothing.
+
+### Changed
+
+- Updates the `psr/container` versions from `^1.0` to `^1.0|^2.0`.
+- Updates development dependencies and development configuration files.
+
+### Deprecated
+
+- Nothing.
+
+### Removed
+
+- Nothing.
+
+### Fixed
+
+-  Nothing.
+
 ## 2.1.5 - 2020.12.12
 
 ### Added
