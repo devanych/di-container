@@ -10,7 +10,6 @@ use Devanych\Di\Exception\ContainerException;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
-use ReflectionNamedType;
 
 use function array_key_exists;
 use function class_exists;
@@ -191,8 +190,8 @@ final class Container implements ContainerInterface
         $arguments = [];
 
         foreach ($constructor->getParameters() as $parameter) {
-            /** @var ReflectionNamedType $type */
             if ($type = $parameter->getType()) {
+                /** @var string $typeName */
                 $typeName = $type->getName();
 
                 if (!$type->isBuiltin() && ($this->has($typeName) || $this->isClassName($typeName))) {
