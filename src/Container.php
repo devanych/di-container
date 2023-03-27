@@ -11,6 +11,7 @@ use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
 
+use ReflectionNamedType;
 use function array_key_exists;
 use function class_exists;
 use function gettype;
@@ -190,6 +191,7 @@ final class Container implements ContainerInterface
         $arguments = [];
 
         foreach ($constructor->getParameters() as $parameter) {
+            /** @var ReflectionNamedType $type */
             if ($type = $parameter->getType()) {
                 $typeName = $type->getName();
 
@@ -198,7 +200,7 @@ final class Container implements ContainerInterface
                     continue;
                 }
 
-                if ($type->isBuiltin() && $typeName === 'array' && !$parameter->isDefaultValueAvailable()) {
+                if ($typeName === 'array' && $type->isBuiltin() && !$parameter->isDefaultValueAvailable()) {
                     $arguments[] = [];
                     continue;
                 }
