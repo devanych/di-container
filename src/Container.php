@@ -191,6 +191,7 @@ final class Container implements ContainerInterface
 
         foreach ($constructor->getParameters() as $parameter) {
             if ($type = $parameter->getType()) {
+                /** @var string $typeName */
                 $typeName = $type->getName();
 
                 if (!$type->isBuiltin() && ($this->has($typeName) || $this->isClassName($typeName))) {
@@ -198,7 +199,7 @@ final class Container implements ContainerInterface
                     continue;
                 }
 
-                if ($type->isBuiltin() && $typeName === 'array' && !$parameter->isDefaultValueAvailable()) {
+                if ($typeName === 'array' && $type->isBuiltin() && !$parameter->isDefaultValueAvailable()) {
                     $arguments[] = [];
                     continue;
                 }
