@@ -10,8 +10,8 @@ use Devanych\Di\Exception\ContainerException;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionException;
-
 use ReflectionNamedType;
+
 use function array_key_exists;
 use function class_exists;
 use function gettype;
